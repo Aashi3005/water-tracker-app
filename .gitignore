@@ -18,6 +18,16 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# Node
+node_modules
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+
 # Metro
 .metro-health-check*
 
