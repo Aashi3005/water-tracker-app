@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.aashikothari22.watertracker"
     },
     "web": {
       "output": "static",
@@ -33,16 +34,28 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#FFFFFF"
         }
+      ],
+      [
+       "expo-notifications",
+  {
+    "icon": "./assets/images/icon.png",
+    "color": "#3B82F6",
+    "androidMode": "default",
+    "androidCollapsedTitle": "Water Reminder"
+  }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5c448ff2-67c8-4bdb-b7a2-749be08ba993"
+      }
     }
   }
 }
