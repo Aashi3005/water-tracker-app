@@ -1,6 +1,14 @@
 # Water Tracker
 
-A feature-rich React Native water tracking app built with Expo. Track your daily water intake with smart reminders, voice commands, and Android home screen widgets.
+A feature-rich React Native water tracking app built with Expo. Track your daily water intake with smart reminders and Android home screen widgets.
+
+## Download
+
+You can download the latest Android APK directly from the [Releases](https://github.com/Aashi3005/water-tracker-app/releases/tag/1.0.0) page:
+
+**[Download APK (v1.0.0)](https://github.com/Aashi3005/water-tracker-app/releases/tag/1.0.0)**
+
+> **Note:** Since this is a weekend project and not on the Play Store, you may need to "Allow installation from unknown sources" in your Android settings.
 
 ## Features
 
