@@ -6,7 +6,8 @@ A feature-rich React Native water tracking app built with Expo. Track your daily
 
 You can download the latest Android APK directly from the [Releases](https://github.com/Aashi3005/water-tracker-app/releases/tag/1.0.0) page:
 
-**[Download APK (v1.0.0)](https://github.com/Aashi3005/water-tracker-app/releases/tag/1.0.0)**
+**[Download APK (v1.0.0)](application-8d554095-c309-449c-8015-839526498d5a.apk
+)**
 
 > **Note:** Since this is a weekend project and not on the Play Store, you may need to "Allow installation from unknown sources" in your Android settings.
 
