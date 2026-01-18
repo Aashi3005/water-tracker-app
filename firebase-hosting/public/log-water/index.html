@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Tracker - Logging Water</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .emoji {
+      font-size: 80px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      color: #111827;
+      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .amount {
+      font-size: 56px;
+      font-weight: 800;
+      color: #3B82F6;
+      margin: 20px 0;
+    }
+    .status {
+      font-size: 18px;
+      color: #6B7280;
+      margin-bottom: 20px;
+    }
+    .success {
+      color: #10B981;
+      font-weight: 600;
+    }
+    .error {
+      color: #DC2626;
+      font-weight: 600;
+    }
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .spinner {
+      border: 4px solid #E5E7EB;
+      border-top: 4px solid #3B82F6;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #10B981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      animation: pop 0.3s ease-out;
+    }
+    .checkmark svg {
+      width: 40px;
+      height: 40px;
+      stroke: white;
+      stroke-width: 3;
+    }
+    @keyframes pop {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .btn {
+      display: inline-block;
+      background: #3B82F6;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: transform 0.2s;
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading State -->
+    <div id="loadingState" class="loading">
+      <div class="emoji">💧</div>
+      <h1>Water Tracker</h1>
+      <div class="spinner"></div>
+      <p class="status">Logging water...</p>
+    </div>
+
+    <!-- Success State -->
+    <div id="successState" class="hidden">
+      <div class="checkmark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1>Water Logged!</h1>
+      <div class="amount" id="amountDisplay">250ml</div>
+      <p class="status success">Successfully added to your daily intake</p>
+      <a href="watertracker://" class="btn">Open App</a>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden">
+      <div class="emoji">❌</div>
+      <h1>Oops!</h1>
+      <p class="status error" id="errorMessage">Something went wrong</p>
+      <a href="watertracker://" class="btn">Open App</a>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEMO_KEY_REPLACE_THIS",
+      authDomain: "water-tracker-app-b6f26.firebaseapp.com",
+      projectId: "water-tracker-app-b6f26",
+      storageBucket: "water-tracker-app-b6f26.firebasestorage.app",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get amount from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = parseInt(urlParams.get('amount')) || 250;
+
+    // Update display
+    document.getElementById('amountDisplay').textContent = amount + 'ml';
+
+    // Helper functions
+    function showState(stateId) {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('successState').classList.add('hidden');
+      document.getElementById('errorState').classList.add('hidden');
+      document.getElementById(stateId).classList.remove('hidden');
+    }
+
+    function getToday() {
+      const now = new Date();
+      return now.toISOString().split('T')[0]; // YYYY-MM-DD
+    }
+
+    // Log water to Firestore
+    async function logWater() {
+      try {
+        const today = getToday();
+
+        // Add water entry to Firestore
+        await addDoc(collection(db, 'waterLogs'), {
+          amount: amount,
+          date: today,
+          timestamp: serverTimestamp(),
+          source: 'voice_assistant'
+        });
+
+        console.log('Water logged successfully:', amount, 'ml');
+        showState('successState');
+
+      } catch (error) {
+        console.error('Error logging water:', error);
+        document.getElementById('errorMessage').textContent = 'Failed to log water. Please try again.';
+        showState('errorState');
+      }
+    }
+
+    // Execute on page load
+    logWater();
+  </script>
+</body>
+</html>

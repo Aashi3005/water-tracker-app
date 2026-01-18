@@ -31,6 +31,7 @@ const REMINDER_INTERVALS = [
 // Time format validation (HH:mm)
 const TIME_REGEX = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
+
 export default function SettingsScreen() {
   const { goal, setGoal, reminderInterval, setReminderInterval, wakeTime, sleepTime, setWakeTime, setSleepTime, loading, refresh } = useWater();
   const [goalInput, setGoalInput] = useState('');

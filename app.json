@@ -9,7 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aashikothari22.watertracker",
+      "infoPlist": {
+        "NSUserActivityTypes": [
+          "com.aashikothari22.watertracker.LogWaterIntent"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +26,52 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.aashikothari22.watertracker"
+      "package": "com.aashikothari22.watertracker",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "watertracker"
+            }
+          ],
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "water-tracker-app-b6f26.web.app",
+              "pathPrefix": "/log-water"
+            }
+          ],
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "water-tracker-app-b6f26.firebaseapp.com",
+              "pathPrefix": "/log-water"
+            }
+          ],
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ]
+        }
+      ]
     },
     "web": {
       "output": "static",
@@ -38,13 +89,32 @@
         }
       ],
       [
-       "expo-notifications",
-  {
-    "icon": "./assets/images/icon.png",
-    "color": "#3B82F6",
-    "androidMode": "default",
-    "androidCollapsedTitle": "Water Reminder"
-  }
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#3B82F6",
+          "androidMode": "default",
+          "androidCollapsedTitle": "Water Reminder"
+        }
+      ],
+      "./plugins/withAndroidAppActions",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "WaterWidget",
+              "label": "Water Tracker",
+              "description": "Quick add water to your daily intake",
+              "minWidth": "280dp",
+              "minHeight": "120dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
       ]
     ],
     "experiments": {

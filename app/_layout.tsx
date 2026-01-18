@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -53,6 +54,25 @@ export default function RootLayout() {
     prepare();
   }, []);
 
+  // Handle deep links for voice assistant integration
+  useEffect(() => {
+    // Handle deep links when app is already open
+    const subscription = Linking.addEventListener('url', (event) => {
+      console.log('Deep link received:', event.url);
+    });
+
+    // Check for initial URL (app launched via deep link)
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        console.log('Initial deep link:', url);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       // Hide splash screen after layout is complete
@@ -77,6 +97,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="history" options={{ title: 'History' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+          <Stack.Screen name="log-water" options={{ headerShown: false, presentation: 'modal' }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="auto" />
