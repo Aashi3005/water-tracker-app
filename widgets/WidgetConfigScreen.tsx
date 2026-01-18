@@ -1,73 +1,19 @@
 'use no memo'; // Disable React Compiler for widget code
 
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import {
-  addWater,
-  clearWidgetLastAdded,
-  getGoal,
-  getToday,
-  getWidgetLastAdded,
-  removeWater,
-  setWidgetLastAdded,
-} from '@/storage/waterStorage';
-import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
-import { FlexWidget, TextWidget } from 'react-native-android-widget';
+  FlexWidget,
+  TextWidget,
+  WidgetConfigurationScreenProps,
+} from 'react-native-android-widget';
 
-const ADD_AMOUNT = 250;
-
-const ACTIONS = {
-  ADD: 'ADD',
-  REMOVE: 'REMOVE',
-} as const;
-
-export async function widgetTaskHandler(
-  props: WidgetTaskHandlerProps
-): Promise<void> {
-  const { clickAction, renderWidget } = props;
-
-  let todayAmount = 0;
-  let goalAmount = 3500;
-  let lastAdded = 0;
-
-  try {
-    if (clickAction === ACTIONS.ADD) {
-      todayAmount = await addWater(ADD_AMOUNT);
-      await setWidgetLastAdded(ADD_AMOUNT);
-    } else if (clickAction === ACTIONS.REMOVE) {
-      const undoAmount = await getWidgetLastAdded();
-      if (undoAmount > 0) {
-        todayAmount = await removeWater(undoAmount);
-        await clearWidgetLastAdded();
-      } else {
-        todayAmount = await getToday();
-      }
-    } else {
-      todayAmount = await getToday();
-    }
-    goalAmount = await getGoal();
-    lastAdded = await getWidgetLastAdded();
-  } catch (error) {
-    console.error('[WIDGET] Error:', error);
-    try {
-      todayAmount = await getToday();
-      goalAmount = await getGoal();
-      lastAdded = await getWidgetLastAdded();
-    } catch (e) {
-      console.error('[WIDGET] Fallback error:', e);
-    }
-  }
-
-  const progress = goalAmount > 0 ? Math.min((todayAmount / goalAmount) * 100, 100) : 0;
-  const progressInt = Math.round(progress);
-  const isComplete = progress >= 100;
-  const fillColor = isComplete ? '#22C55E' : '#3B82F6';
-  const bgColor = isComplete ? '#DCFCE7' : '#E0F2FE';
-
-  renderWidget(
+function getInitialWidgetUI() {
+  return (
     <FlexWidget
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: bgColor,
+        backgroundColor: '#E0F2FE',
         borderRadius: 24,
         flexDirection: 'column',
         alignItems: 'center',
@@ -75,7 +21,6 @@ export async function widgetTaskHandler(
         padding: 12,
       }}
     >
-      {/* Main row: - button, Battery, + button */}
       <FlexWidget
         style={{
           flex: 1,
@@ -85,17 +30,16 @@ export async function widgetTaskHandler(
           width: 'match_parent',
         }}
       >
-        {/* Minus Button - 50% height */}
+        {/* Minus Button */}
         <FlexWidget
           style={{
             width: 70,
             height: 70,
-            backgroundColor: lastAdded > 0 ? '#475569' : '#94A3B8',
+            backgroundColor: '#94A3B8',
             borderRadius: 35,
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          clickAction={ACTIONS.REMOVE}
         >
           <TextWidget
             text="−"
@@ -107,7 +51,7 @@ export async function widgetTaskHandler(
           />
         </FlexWidget>
 
-        {/* Battery - Responsive */}
+        {/* Battery */}
         <FlexWidget
           style={{
             flex: 1,
@@ -118,7 +62,6 @@ export async function widgetTaskHandler(
             height: 'match_parent',
           }}
         >
-          {/* Battery Cap */}
           <FlexWidget
             style={{
               width: 32,
@@ -128,8 +71,6 @@ export async function widgetTaskHandler(
               borderTopRightRadius: 4,
             }}
           />
-
-          {/* Battery Body - Takes remaining space */}
           <FlexWidget
             style={{
               width: 80,
@@ -140,11 +81,10 @@ export async function widgetTaskHandler(
               flexDirection: 'column',
             }}
           >
-            {/* Empty part */}
             <FlexWidget
               style={{
                 width: 'match_parent',
-                flex: 100 - Math.max(progressInt, 5),
+                flex: 95,
                 backgroundColor: '#E2E8F0',
                 borderTopLeftRadius: 8,
                 borderTopRightRadius: 8,
@@ -152,45 +92,28 @@ export async function widgetTaskHandler(
                 justifyContent: 'center',
               }}
             >
-              {progress <= 40 && (
-                <TextWidget
-                  text={`${progressInt}%`}
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    color: '#1E40AF',
-                  }}
-                />
-              )}
+              <TextWidget
+                text="0%"
+                style={{
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  color: '#1E40AF',
+                }}
+              />
             </FlexWidget>
-
-            {/* Water Fill */}
             <FlexWidget
               style={{
                 width: 'match_parent',
-                flex: Math.max(progressInt, 5),
-                backgroundColor: fillColor,
+                flex: 5,
+                backgroundColor: '#3B82F6',
                 borderBottomLeftRadius: 8,
                 borderBottomRightRadius: 8,
-                alignItems: 'center',
-                justifyContent: 'center',
               }}
-            >
-              {progress > 40 && (
-                <TextWidget
-                  text={`${progressInt}%`}
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    color: '#FFFFFF',
-                  }}
-                />
-              )}
-            </FlexWidget>
+            />
           </FlexWidget>
         </FlexWidget>
 
-        {/* Plus Button - 50% height */}
+        {/* Plus Button */}
         <FlexWidget
           style={{
             width: 70,
@@ -200,7 +123,6 @@ export async function widgetTaskHandler(
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          clickAction={ACTIONS.ADD}
         >
           <TextWidget
             text="+"
@@ -213,7 +135,6 @@ export async function widgetTaskHandler(
         </FlexWidget>
       </FlexWidget>
 
-      {/* Bottom: Amount display */}
       <FlexWidget
         style={{
           backgroundColor: '#1E3A5F',
@@ -225,7 +146,7 @@ export async function widgetTaskHandler(
         }}
       >
         <TextWidget
-          text={`${todayAmount} ml / ${goalAmount} ml`}
+          text="0 ml / 3500 ml"
           style={{
             fontSize: 15,
             fontWeight: 'bold',
@@ -243,3 +164,34 @@ export async function widgetTaskHandler(
     </FlexWidget>
   );
 }
+
+export function WidgetConfigScreen({
+  widgetInfo,
+  setResult,
+  renderWidget,
+}: WidgetConfigurationScreenProps) {
+  console.log('[WidgetConfig] Configuring:', widgetInfo?.widgetName);
+  renderWidget(getInitialWidgetUI());
+  setTimeout(() => setResult('ok'), 300);
+
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#3B82F6" />
+      <Text style={styles.text}>Adding widget...</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  text: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+});

@@ -106,11 +106,12 @@
               "name": "WaterWidget",
               "label": "Water Tracker",
               "description": "Quick add water to your daily intake",
-              "minWidth": "280dp",
+              "minWidth": "180dp",
               "minHeight": "120dp",
-              "targetCellWidth": 4,
+              "targetCellWidth": 3,
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
+              "widgetFeatures": "reconfigurable",
               "updatePeriodMillis": 1800000
             }
           ]

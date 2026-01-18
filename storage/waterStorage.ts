@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@water_tracker_data';
 const LAST_ACCESSED_KEY = '@water_tracker_last_accessed';
+const WIDGET_LAST_ADDED_KEY = '@water_tracker_widget_last_added';
 const DEFAULT_GOAL = 3500; // ml
 const DEFAULT_REMINDER_INTERVAL = 60; // 1 hour in minutes
 const DEFAULT_WAKE_TIME = '07:00'; // 7 AM
@@ -413,5 +414,35 @@ export async function clearWaterData(): Promise<void> {
   } catch (error) {
     if (__DEV__) console.error('Error clearing water data:', error);
     throw error;
+  }
+}
+
+/**
+ * Widget Undo Functions
+ * Stores the last amount added via widget for undo functionality
+ */
+export async function setWidgetLastAdded(amount: number): Promise<void> {
+  try {
+    await AsyncStorage.setItem(WIDGET_LAST_ADDED_KEY, amount.toString());
+  } catch (error) {
+    if (__DEV__) console.error('Error setting widget last added:', error);
+  }
+}
+
+export async function getWidgetLastAdded(): Promise<number> {
+  try {
+    const amount = await AsyncStorage.getItem(WIDGET_LAST_ADDED_KEY);
+    return amount ? parseInt(amount, 10) : 0;
+  } catch (error) {
+    if (__DEV__) console.error('Error getting widget last added:', error);
+    return 0;
+  }
+}
+
+export async function clearWidgetLastAdded(): Promise<void> {
+  try {
+    await AsyncStorage.setItem(WIDGET_LAST_ADDED_KEY, '0');
+  } catch (error) {
+    if (__DEV__) console.error('Error clearing widget last added:', error);
   }
 }

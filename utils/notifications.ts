@@ -15,6 +15,32 @@ const WATER_REMINDER_CHANNEL_ID = 'water-reminder';
 const WATER_REMINDER_ID_PREFIX = 'water-reminder-';
 
 /**
+ * Funny Hinglish notification messages
+ * These rotate with each notification throughout the day
+ */
+const HINGLISH_MESSAGES = [
+  "Bhai paani pi, kidney boli please! 💧",
+  "Paani pi le varna skin dull ho jayegi, phir selfie kaun lega? 📸",
+  "Hydration ka time hai, chal uth! 🚰",
+  "Pani pi le warna headache free milega! 🤕",
+  "Bro water break le, body boli thank you bolegi! 🙏",
+  "Chai coffee chhod, paani ka number hai ab! ☕➡️💧",
+  "Tera body 70% paani hai, top up kar de thoda! 🔋",
+  "Paani pi, glow aayega FREE mein! ✨",
+  "Dehydration se bachna hai toh paani pee ja! 🏃",
+  "Filter coffee nahi, filtered paani pi! 💪",
+  "H2O time! Apni body ko pyaar de! 💙",
+  "Paani nahi piyega toh thak jayega, chal pi le! 😴",
+  "Doctor se milna hai ya paani peena hai? Choice is yours! 🏥",
+  "Ek glass paani = Happy organs! 🎉",
+  "Chal bhai, paani pi aur kaam pe lag! 💼",
+  "Skin glow chahiye? Paani pi pehle! 🌟",
+  "Energy low? Paani high kar! ⚡",
+  "Boss bole ya na bole, body boli paani pi! 😎",
+  "Paani peene se IQ badhta hai, sach mein! 🧠",
+];
+
+/**
  * Check if running in Expo Go (where notifications have limited support)
  */
 function isExpoGo(): boolean {
@@ -424,10 +450,14 @@ export async function scheduleWaterReminders(
             minute: time.minute,
           } as Notifications.DailyTriggerInput;
 
+      // Get a different Hinglish message for each notification
+      const messageIndex = index % HINGLISH_MESSAGES.length;
+      const funnyMessage = HINGLISH_MESSAGES[messageIndex];
+
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: '💧 Time to drink water!',
-          body: `Drink ${glassMl}ml of water to stay hydrated.`,
+          title: '💧 Paani Pi Le!',
+          body: funnyMessage,
           sound: true, // Explicitly enable sound (NOT silent)
           data: {
             glassMl,

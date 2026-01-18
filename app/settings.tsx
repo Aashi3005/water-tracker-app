@@ -1,6 +1,6 @@
 import { useWater } from '@/hooks/useWater';
 import { clearWaterData } from '@/storage/waterStorage';
-import { scheduleWaterReminders, scheduleWaterNotification } from '@/utils/notifications';
+import { scheduleWaterReminders } from '@/utils/notifications';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -39,7 +39,6 @@ export default function SettingsScreen() {
   const [sleepTimeInput, setSleepTimeInput] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [resetting, setResetting] = useState(false);
-  const [testingNotification, setTestingNotification] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const wakeTimeInputRef = useRef<TextInput>(null);
   const sleepTimeInputRef = useRef<TextInput>(null);
@@ -82,29 +81,6 @@ export default function SettingsScreen() {
     } catch (error) {
       Alert.alert('Error', 'Failed to update goal. Please try again.');
       setGoalInput(goal.toString());
-    }
-  };
-
-  const handleTestNotification = async () => {
-    try {
-      setTestingNotification(true);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-      await scheduleWaterNotification({
-        title: '💧 Test Notification',
-        body: 'If you see this, notifications are working! Your reminders will arrive at scheduled times.',
-        seconds: 5,
-      });
-
-      Alert.alert(
-        'Test Notification Scheduled',
-        'You will receive a test notification in 5 seconds. Make sure your phone is unlocked and sound is on!',
-        [{ text: 'OK' }]
-      );
-    } catch (error) {
-      Alert.alert('Error', 'Failed to send test notification. Please check notification permissions in phone settings.');
-    } finally {
-      setTestingNotification(false);
     }
   };
 
@@ -399,25 +375,6 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Test Notification Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Test Notifications</Text>
-          <Text style={styles.sectionDescription}>
-            Send a test notification in 5 seconds to verify notifications are working
-          </Text>
-          <TouchableOpacity
-            style={[styles.testButton, testingNotification && styles.testButtonDisabled]}
-            onPress={handleTestNotification}
-            disabled={testingNotification}
-            activeOpacity={0.7}>
-            {testingNotification ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <Text style={styles.testButtonText}>Send Test Notification</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
         {/* Reset Data Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Data Management</Text>
@@ -582,21 +539,6 @@ const styles = StyleSheet.create({
   dropdownArrow: {
     fontSize: 12,
     color: '#6B7280',
-  },
-  testButton: {
-    backgroundColor: '#10B981',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  testButtonDisabled: {
-    opacity: 0.6,
-  },
-  testButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
   resetButton: {
     backgroundColor: '#DC2626',

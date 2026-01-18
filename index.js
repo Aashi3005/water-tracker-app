@@ -1,8 +1,5 @@
-import { registerWidgetTaskHandler } from 'react-native-android-widget';
-import { widgetTaskHandler } from './widgets/widget-task-handler';
+// Step 5: Widget registration MUST come first, before expo-router
+import './widget-entry';
 
-// Register the widget task handler
-registerWidgetTaskHandler(widgetTaskHandler);
-
-// Import expo-router entry point
+// Then import expo-router entry point
 import 'expo-router/entry';

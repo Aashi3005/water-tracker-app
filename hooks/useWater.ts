@@ -114,7 +114,7 @@ export function useWater(): UseWaterReturn {
 
   /**
    * Handles app state changes (foreground/background)
-   * Refreshes data when app comes to foreground to handle day changes
+   * Refreshes data when app comes to foreground to sync widget changes
    */
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -122,8 +122,8 @@ export function useWater(): UseWaterReturn {
         appStateRef.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        // App has come to the foreground, check for day change
-        checkDayChange();
+        // App has come to the foreground, always refresh to sync widget changes
+        loadTodayData();
       }
       appStateRef.current = nextAppState;
     });
@@ -131,7 +131,7 @@ export function useWater(): UseWaterReturn {
     return () => {
       subscription.remove();
     };
-  }, [checkDayChange]);
+  }, [loadTodayData]);
 
   /**
    * Periodically check for day changes (every minute)
